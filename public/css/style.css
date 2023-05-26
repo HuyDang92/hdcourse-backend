@@ -1,0 +1,40 @@
+* {
+}
+body {
+    background-image: url("../images/brg.jpg");
+    background-size: cover;
+}
+a {
+    color: orange;
+    text-decoration: none;
+}
+a:hover {
+    color: orange;
+}
+.card-header img {
+    box-shadow: 9px 15px 35px 0px rgba(91, 88, 88, 0.75) !important;
+    -webkit-box-shadow: 9px 15px 35px 0px rgba(91, 88, 88, 0.75) !important;
+    -moz-box-shadow: 9px 15px 35px 0px rgba(91, 88, 88, 0.75) !important;
+}
+.product__title {
+    font-size: 90%;
+    cursor: pointer;
+}
+.product__description {
+    font-size: 70%;
+    color: #ccc;
+}
+main .container .info-detail {
+    /* font-size: 2rem; */
+    /* font-weight: bold; */
+}
+main .container .info-detail p {
+    /* font-size: 2rem; */
+    font-weight: bold;
+    color: orange;
+}
+td,
+th,
+tr {
+    border: 1px solid #000;
+}
