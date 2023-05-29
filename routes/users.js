@@ -1,27 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
+const multer = require("multer");
+const Users = require("../models/userModel");
 
-// Kết nối MongoDB
-mongoose.connect("mongodb://127.0.0.1:27017/taskhub", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-const userSchema = new mongoose.Schema({
-    id: Number,
-    fullname: String,
-    email: {
-        type: String,
-        required: true,
+const uploadAvt = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./assets/img/faces"); // Thay đổi đường dẫn lưu trữ thành "/public/img/avt"
     },
-    password: String,
-    phone: String,
-    avatar: String,
-    role: Number,
+    filename: (req, file, cb) => {
+        const fileName = `${file.originalname}`;
+        cb(null, fileName);
+    },
 });
 
-const Users = mongoose.model("user", userSchema);
+// upload avt
+router.post("/uploadAvt", multer({ storage: uploadAvt }).single("avt"), (req, res) => {
+    // File ảnh đã được lưu vào thư mục /public/img/avt
+    res.json({ mes: "Upload thành công vào thư mục" });
+    res.status(200).end();
+});
 // Chèn dữ liệu vào MongoDB
 router.post("/add", async (req, res) => {
     try {

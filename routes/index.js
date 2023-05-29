@@ -1,9 +1,12 @@
+const tasksRouter = require("./tasks");
+const listsRouter = require("./lists");
+const boardsRouter = require("./boards");
 const usersRouter = require("./users");
-// const newsRouter = require("./tin");
 const siteRouter = require("./site");
 function route(app) {
-    /* GET home page. */
-    // app.use("/news", newsRouter);
+    app.use("/api/tasks", tasksRouter);
+    app.use("/api/lists", listsRouter);
+    app.use("/api/boards", boardsRouter);
     app.use("/api/users", usersRouter);
     app.use("/", siteRouter);
 }
