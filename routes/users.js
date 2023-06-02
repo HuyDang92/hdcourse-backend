@@ -29,7 +29,7 @@ router.post("/add", async (req, res) => {
             role: 0,
         };
         const data = await Users.create(userData);
-        res.json({ mes: "Đăng ký thành công" });
+        res.json({ mes: "Đăng ký thành công", data: data });
     } catch (err) {
         throw err;
     }
@@ -44,6 +44,16 @@ router.get("/getAll", async (req, res) => {
     }
 });
 
+router.get("/idUser/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = await Users.findOne({ _id: id });
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Lỗi lấy dữ liệu");
+    }
+});
 router.get("/:email", async (req, res) => {
     try {
         const email = req.params.email;

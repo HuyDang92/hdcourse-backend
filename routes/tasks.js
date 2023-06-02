@@ -7,9 +7,12 @@ router.post("/add", async (req, res) => {
     try {
         const taskData = {
             ...req.body,
+            status: "",
+            dateStart: "",
+            dateEnd: "",
         };
         const data = await Tasks.create(taskData);
-        res.json({ mes: "Thêm thành công!" });
+        res.json({ mes: "Thêm thành công!", data: data });
     } catch (err) {
         res.json({ mes: "Thêm thất bại!" });
         throw err;
@@ -18,7 +21,7 @@ router.post("/add", async (req, res) => {
 router.get("/board/:boardId", async (req, res) => {
     try {
         const boardId = req.params.boardId;
-        const tasks = await Tasks.find({ board: boardId }).populate("board");
+        const tasks = await Tasks.find({ board: boardId }).populate("list");
         res.json(tasks);
     } catch (err) {
         console.error(err);

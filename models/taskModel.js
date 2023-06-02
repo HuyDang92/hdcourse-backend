@@ -15,6 +15,15 @@ const taskSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+    },
+    dateStart: {
+        type: String,
+    },
+    dateEnd: {
+        type: String,
+    },
 });
 
 const Task = mongoose.model("Task", taskSchema);

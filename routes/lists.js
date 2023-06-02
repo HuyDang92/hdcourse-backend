@@ -10,7 +10,7 @@ router.post("/add", async (req, res) => {
             ...req.body,
         };
         const data = await Lists.create(taskData);
-        res.json({ mes: "Thêm thành công!" });
+        res.json({ mes: "Thêm thành công!", data: data });
     } catch (err) {
         res.json({ mes: "Thêm thất bại!" });
         throw err;
@@ -19,8 +19,8 @@ router.post("/add", async (req, res) => {
 router.get("/:boardId", async (req, res) => {
     try {
         const boardId = req.params.boardId;
-        const tasks = await Lists.find({ board: boardId }).populate("board");
-        res.json(tasks);
+        const lists = await Lists.find({ board: boardId });
+        res.json(lists);
     } catch (err) {
         console.error(err);
         res.status(500).send("Lỗi lấy dữ liệu");

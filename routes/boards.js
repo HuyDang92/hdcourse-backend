@@ -35,7 +35,16 @@ router.get("/getAll", async (req, res) => {
         throw err;
     }
 });
-
+router.get("/user/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const boards = await Boards.find({ user: userId });
+        res.json(boards);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Lỗi lấy dữ liệu");
+    }
+});
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
@@ -49,6 +58,36 @@ router.get("/:id", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send("Lỗi lấy dữ liệu");
+    }
+});
+router.put("/addMember/:id", async (req, res) => {
+    const id = req.params.id;
+    const userId = req.body.userId; // ID người dùng cần thêm vào board
+    try {
+        const data = await Boards.findByIdAndUpdate(id, { $addToSet: { user: userId } }, { new: true });
+        if (data) {
+            res.json({ mes: "Cập nhật thành công" });
+        } else {
+            res.json({ mes: "Cập nhật thất bại" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Lỗi cập nhật dữ liệu");
+    }
+});
+router.put("/removeMember/:id", async (req, res) => {
+    const id = req.params.id;
+    const userId = req.body.userId; // ID người dùng cần thêm vào board
+    try {
+        const data = await Boards.findByIdAndUpdate(id, { $pull: { user: userId } }, { new: true });
+        if (data) {
+            res.json({ mes: "Cập nhật thành công" });
+        } else {
+            res.json({ mes: "Cập nhật thất bại" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Lỗi cập nhật dữ liệu");
     }
 });
 
