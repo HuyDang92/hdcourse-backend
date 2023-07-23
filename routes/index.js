@@ -1,14 +1,10 @@
-const tasksRouter = require("./tasks");
-const listsRouter = require("./lists");
-const boardsRouter = require("./boards");
-const usersRouter = require("./users");
-const siteRouter = require("./site");
+const auth = require("./auth");
+const course = require("./course");
+const category = require("./category");
 function route(app) {
-    app.use("/api/tasks", tasksRouter);
-    app.use("/api/lists", listsRouter);
-    app.use("/api/boards", boardsRouter);
-    app.use("/api/users", usersRouter);
-    app.use("/", siteRouter);
+   app.use("/api/category", category);
+   app.use("/api/course", course);
+   app.use("/api/current-user", auth);
 }
 
 module.exports = route;
