@@ -7,7 +7,6 @@ const indexRouter = require("./routes/index");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const port = process.env.PORT;
-console.log(port);
 const app = express();
 
 // app.set("views", path.join(__dirname, "./views"));

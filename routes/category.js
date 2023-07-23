@@ -1,6 +1,6 @@
 const express = require("express");
 const cate = require("../controller/categoryController");
-const middlewareController = require("../controller/middleWareUserController");
+const middlewareController = require("../middlewares/middleWareUserController");
 const router = express.Router();
 
 router.get("/getCatLevelOne", cate.getCatLevelOne);

@@ -50,15 +50,22 @@ class NewsSite {
       }
    }
    async updateProfile(req, res) {
-      const { uid, phoneNumber, displayName, photoURL } = req.body;
+      const { uid, phoneNumber, displayName } = req.body;
+      const photoURL = req.file;
       const formattedPhoneNumber = phoneNumber && PhoneNumber(phoneNumber, "VN").format("E.164");
       try {
          // Sử dụng Firebase Admin SDK để cập nhật thông tin người dùng trên Firebase Authentication
-         await admin.auth().updateUser(uid, {
-            phoneNumber: formattedPhoneNumber,
+         const defaultPhotoURL =
+            "https://res.cloudinary.com/dbppi7qw4/image/upload/v1690097671/users_avatar/yvwnylf4e3svysfexxgi.jpg";
+
+         const userData = {
             displayName: displayName,
-            photoURL: photoURL,
-         });
+            photoURL: photoURL && photoURL.path ? photoURL.path : defaultPhotoURL,
+         };
+         if (formattedPhoneNumber !== null) {
+            userData.phoneNumber = formattedPhoneNumber;
+         }
+         await admin.auth().updateUser(uid, userData);
          // Cập nhật thông tin người dùng trong collection "users"
          const usersRef = admin.firestore().collection("users");
          const userDoc = await usersRef.doc(uid).get();
@@ -66,11 +73,10 @@ class NewsSite {
             res.status(404).json({ mes: "Không tìm thấy người dùng" });
             return;
          }
-
          const updateData = {
             phoneNumber: phoneNumber ?? userDoc.data().phoneNumber,
             displayName: displayName ?? userDoc.data().displayName,
-            photoURL: photoURL ?? userDoc.data().photoURL,
+            photoURL: photoURL.path ?? userDoc.data().photoURL,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
          };
          await usersRef.doc(uid).set(updateData, { merge: true });
@@ -140,9 +146,8 @@ class NewsSite {
       }
    }
    async signIn(req, res) {
-      const { uid } = req.body;
       try {
-         res.status(200).json({ message: "Đăng nhập thành công", uid: userRecord });
+         res.status(200).json({ message: "Đăng nhập thành công" });
       } catch (error) {
          console.error("Error creating new user:", error);
          res.status(500).json({ message: "Đăng nhập thất bại", error });
