@@ -3,7 +3,8 @@
    "version": "0.0.0",
    "private": true,
    "scripts": {
-      "start": "node app.js"
+      "start": "nodemon app.js",
+      "dev": "node app.js"
    },
    "author": "Đặng Huỳnh Huy ps25063",
    "dependencies": {

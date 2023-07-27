@@ -10,17 +10,22 @@ cloudinary.config({
    api_secret: process.env.API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-   cloudinary,
-   allowedFormats: ["jpg", "png"],
-   filename: function (req, res) {
-      cb(null, file.originalname);
-   },
-   params: {
-      folder: "users_avatar", // Thư mục đích để lưu trữ ảnh
-   },
-});
+const createCloudinaryStorage = (folder) => {
+   return new CloudinaryStorage({
+      cloudinary,
+      allowedFormats: ["jpg", "png"],
+      filename: function (req, file, cb) {
+         cb(null, file.originalname);
+      },
+      params: {
+         folder: folder, // Sử dụng tham số folder được truyền vào từ bên ngoài
+      },
+   });
+};
 
-const uploadImage = multer({ storage });
+const uploadImage = (folder) => {
+   const storage = createCloudinaryStorage(folder);
+   return multer({ storage });
+};
 
 module.exports = uploadImage;

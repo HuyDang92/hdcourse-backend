@@ -10,6 +10,7 @@ router.post("/create", middlewareController.verifyToken, auth.create);
 router.delete("/delete/:uid", middlewareController.verifyToken, auth.delete);
 router.get("/getAllData", middlewareController.verifyToken, auth.getAllUser);
 router.post("/getUserById", middlewareController.verifyToken, auth.getUserById);
-router.put("/updateProfile", uploadImage.single("photoURL"), auth.updateProfile);
+router.get("/getUserByIdQuery/:id", auth.getUserByIdQuery);
+router.put("/updateProfile", uploadImage("users_avatar").single("photoURLNew"), auth.updateProfile);
 
 module.exports = router;
