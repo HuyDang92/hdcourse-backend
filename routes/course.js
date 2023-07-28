@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/addCourse", uploadImage("courses").single("thumb"), course.addCourse);
 router.delete("/delete/:uid", course.delete);
-router.get("/getAllData", course.getAllData);
+router.get("/getAllData/:limit", course.getAllData);
 router.get("/getAllDataByIdCat", course.getAllDataByIdCat);
 router.get("/getAllDataByNameCat", course.getAllDataByNameCat);
 router.get("/getCourseById/:id", course.getCourseById);

@@ -10,7 +10,6 @@ class NewsSite {
          querySnapshot.forEach((doc) => {
             allUsers.push(doc.data());
          });
-
          return res.status(200).json(allUsers);
       } catch (error) {
          console.error("Error getting all users:", error);

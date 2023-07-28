@@ -2,8 +2,10 @@ const admin = require("../firebase/index");
 
 class NewsSite {
    async getAllData(req, res) {
+      const { limit } = req.params;
+      console.log(limit);
       try {
-         const courseRef = admin.firestore().collection("courses");
+         const courseRef = admin.firestore().collection("courses").limit(parseInt(limit));
          const querySnapshot = await courseRef.get();
          const allCourses = [];
          querySnapshot.forEach((doc) => {
