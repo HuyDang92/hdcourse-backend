@@ -8,8 +8,9 @@ const router = express.Router();
 router.post("/addCourse", uploadImage("courses").single("thumb"), course.addCourse);
 router.delete("/delete/:uid", course.delete);
 router.get("/getAllData/:limit", course.getAllData);
-router.get("/getAllDataByIdCat", course.getAllDataByIdCat);
-router.get("/getAllDataByNameCat", course.getAllDataByNameCat);
+router.get("/getAllDataCatHot", course.getAllDataCatHot);
+router.get("/getAllDataByIdCat/:idCategory/:pageSize/:currentPage", course.getAllDataByIdCat);
+router.get("/getAllDataByNameCat/:nameCat", course.getAllDataByNameCat);
 router.get("/getCourseById/:id", course.getCourseById);
 // router.put("/updateCourse", course.updateCourse);
 

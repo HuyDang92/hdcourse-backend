@@ -4,7 +4,8 @@ const middlewareController = require("../middlewares/middleWareUserController");
 const uploadImage = require("../middlewares/middlewareUpload");
 const router = express.Router();
 
-router.post("/signIn", auth.signIn);
+router.get("/getWishList/:idUser", auth.getWishList);
+router.post("/addWishList", auth.addWishList);
 router.post("/addUser", auth.addUser);
 router.post("/create", middlewareController.verifyToken, auth.create);
 router.delete("/delete/:uid", middlewareController.verifyToken, auth.delete);

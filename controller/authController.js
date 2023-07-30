@@ -155,12 +155,58 @@ class NewsSite {
          res.status(500).json({ message: "Tạo người dùng thất bại", error });
       }
    }
-   async signIn(req, res) {
+   async addWishList(req, res) {
+      const { idUser, idCourse } = req.body;
       try {
-         res.status(200).json({ message: "Đăng nhập thành công" });
+         const getListRef = admin.firestore().collection("wishList");
+         const listQuery = await getListRef
+            .where("idUser", "==", idUser)
+            .where("idCourse", "==", idCourse)
+            .get();
+
+         if (!listQuery.empty) {
+            // Nếu có tài liệu tồn tại, xóa tài liệu đầu tiên
+            const listDoc = listQuery.docs[0];
+            await listDoc.ref.delete();
+            res.status(200).json({ message: "Xóa thành công" });
+         } else {
+            // Nếu không tìm thấy tài liệu, thêm một tài liệu mới vào collection "wishList"
+            const listRef = admin.firestore().collection("wishList");
+            const data = {
+               idUser: idUser,
+               idCourse: idCourse,
+               createdAt: admin.firestore.FieldValue.serverTimestamp(),
+               updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            };
+            await listRef.add(data);
+
+            res.status(200).json({ message: "Thêm thành công" });
+         }
       } catch (error) {
-         console.error("Error creating new user:", error);
-         res.status(500).json({ message: "Đăng nhập thất bại", error });
+         console.error("Error add wishlist:", error);
+         res.status(500).json({ message: "Thêm thất bại", error });
+      }
+   }
+   async getWishList(req, res) {
+      const { idUser } = req.params;
+      try {
+         const getListRef = admin.firestore().collection("wishList");
+         const querySnapshot = await getListRef.where("idUser", "==", idUser).get();
+
+         if (!querySnapshot.empty) {
+            // Nếu có tài liệu tồn tại, xóa tài liệu đầu tiên
+            const allWishList = [];
+            querySnapshot.forEach((doc) => {
+               allWishList.push({ id: doc.id, ...doc.data() });
+            });
+            res.status(200).json(allWishList);
+         } else {
+            // Nếu không tìm thấy tài liệu, thêm một tài liệu mới vào collection "wishList"
+            res.status(200).json([]);
+         }
+      } catch (error) {
+         console.error("Error get wishlist:", error);
+         res.status(500).json({ message: "Lấy thất bại", error });
       }
    }
 }
