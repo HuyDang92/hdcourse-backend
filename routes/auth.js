@@ -10,7 +10,12 @@ router.post("/addUser", auth.addUser);
 router.post("/create", middlewareController.verifyToken, auth.create);
 router.delete("/delete/:uid", middlewareController.verifyToken, auth.delete);
 router.get("/getAllData", middlewareController.verifyToken, auth.getAllUser);
-router.post("/getUserById", middlewareController.verifyToken, auth.getUserById);
+router.get(
+   "/getDataLimit/:pageSize/:currentPage",
+   middlewareController.verifyToken,
+   auth.getDataLimit
+);
+router.post("/getUserById", auth.getUserById);
 router.get("/getUserByIdQuery/:id", auth.getUserByIdQuery);
 router.put("/updateProfile", uploadImage("users_avatar").single("photoURLNew"), auth.updateProfile);
 

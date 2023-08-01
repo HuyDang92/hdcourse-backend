@@ -16,6 +16,59 @@ class NewsSite {
          throw new Error("Failed to get all users from Firestore");
       }
    }
+   async getDataLimit(req, res) {
+      const { pageSize, currentPage } = req.params;
+      try {
+         const allUsers = [];
+         const usersRef = admin.firestore().collection("users");
+         let query = usersRef.orderBy("createdAt", "desc");
+
+         // Lấy tất cả khóa học mà không giới hạn số lượng bằng limit
+         const allQuerySnapshot = await query.get();
+         allQuerySnapshot.forEach((course) => {
+            allUsers.push({ id: course.id, ...course.data() });
+         });
+
+         // Tính tổng số trang (totalPage) dựa vào số lượng khóa học đã giới hạn bằng pageSize
+         const totalUsersCount = allUsers.length;
+         const totalPage = Math.ceil(totalUsersCount / parseInt(pageSize));
+
+         // Kiểm tra nếu currentPage không hợp lệ (nhỏ hơn 1) hoặc lớn hơn tổng số trang, trả về một mảng rỗng
+         if (parseInt(currentPage) < 1 || parseInt(currentPage) > totalPage) {
+            return res.status(200).json({ totalPage, totalUsersCount, data: [] });
+         }
+
+         // Nếu có currentPage và currentPage nhỏ hơn hoặc bằng tổng số trang, thực hiện truy vấn tiếp theo bằng startAfter và limit
+         if (currentPage <= totalPage) {
+            // Tính chỉ số của khóa học đầu tiên của trang hiện tại
+            const firstCourseIndex =
+               currentPage === "1" ? 0 : (parseInt(currentPage) - 1) * parseInt(pageSize);
+
+            // Lấy khóa học đầu tiên của trang hiện tại từ mảng allUsers
+            const firstCourse = allUsers[firstCourseIndex];
+
+            // Nếu trang cuối cùng (currentPage === totalPage), chỉ sử dụng limit
+            if (parseInt(currentPage) === totalPage) {
+               query = query.limit(parseInt(pageSize));
+            } else {
+               // Trang không phải trang cuối cùng, sử dụng startAfter và limit
+               query = query.startAfter(firstCourse.createdAt).limit(parseInt(pageSize));
+            }
+         }
+
+         // Thực hiện truy vấn cuối cùng và lấy dữ liệu
+         const querySnapshot = await query.get();
+         const pageCourses = [];
+         querySnapshot.forEach((course) => {
+            pageCourses.push({ id: course.id, ...course.data() });
+         });
+
+         return res.status(200).json({ totalPage, totalUsersCount, data: pageCourses });
+      } catch (error) {
+         console.error("Error getting all course:", error);
+         return res.status(500).json({ error: "Failed to get all course from Firestore" });
+      }
+   }
    async getUserById(req, res) {
       const { uid } = req.body;
       try {
@@ -34,8 +87,8 @@ class NewsSite {
    async getUserByIdQuery(req, res) {
       const { id } = req.params;
       try {
-         const courseRef = admin.firestore().collection("users");
-         const courseDoc = await courseRef.doc(id).get();
+         const usersRef = admin.firestore().collection("users");
+         const courseDoc = await usersRef.doc(id).get();
          if (!courseDoc.exists) {
             res.status(401).json({ mes: "Không tìm thấy user" });
             return null;
