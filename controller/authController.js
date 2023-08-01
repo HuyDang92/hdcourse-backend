@@ -66,20 +66,27 @@ class NewsSite {
    async updateProfile(req, res) {
       const { uid, phoneNumber, displayName, photoURL } = req.body;
       const photoURLNew = req.file;
-      const formattedPhoneNumber = phoneNumber && PhoneNumber(phoneNumber, "VN").format("E.164");
+      let formattedPhoneNumber = "";
+      let userDataFull = null;
+      if (!phoneNumber) {
+         formattedPhoneNumber = PhoneNumber(phoneNumber, "VN").format("E.164");
+      }
+
       try {
          const usersRef = admin.firestore().collection("users");
          // Sử dụng Firebase Admin SDK để cập nhật thông tin người dùng trên Firebase Authentication
-         const userDataFull = phoneNumber
-            ? {
-                 displayName: displayName,
-                 photoURL: photoURLNew ? photoURLNew.path : photoURL,
-                 phoneNumber: formattedPhoneNumber,
-              }
-            : {
-                 displayName: displayName,
-                 photoURL: photoURLNew ? photoURLNew.path : photoURL,
-              };
+         if (!phoneNumber) {
+            userDataFull = {
+               displayName: displayName,
+               photoURL: photoURLNew ? photoURLNew.path : photoURL,
+               phoneNumber: formattedPhoneNumber,
+            };
+         } else {
+            userDataFull = {
+               displayName: displayName,
+               photoURL: photoURLNew ? photoURLNew.path : photoURL,
+            };
+         }
 
          await admin.auth().updateUser(uid, userDataFull);
          // Cập nhật thông tin người dùng trong collection "users"

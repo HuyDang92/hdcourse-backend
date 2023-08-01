@@ -10,6 +10,7 @@ router.delete("/delete/:uid", course.delete);
 router.get("/getAllData/:limit", course.getAllData);
 router.get("/getAllDataCatHot", course.getAllDataCatHot);
 router.get("/getAllDataByIdCat/:idCategory/:pageSize/:currentPage", course.getAllDataByIdCat);
+router.get("/getAllDataFree/:idCategory/:pageSize/:currentPage/:free", course.getAllDataFree);
 router.get("/getAllDataByNameCat/:nameCat", course.getAllDataByNameCat);
 router.get("/getCourseById/:id", course.getCourseById);
 // router.put("/updateCourse", course.updateCourse);
