@@ -250,23 +250,56 @@ class NewsSite {
    async getWishList(req, res) {
       const { idUser } = req.params;
       try {
-         const getListRef = admin.firestore().collection("wishList");
-         const querySnapshot = await getListRef.where("idUser", "==", idUser).get();
+         const allCourses = [];
+         const ref = admin.firestore().collection("wishList");
+         const querySnapshotCat = await ref.where("idUser", "==", idUser).get();
 
-         if (!querySnapshot.empty) {
-            // Nếu có tài liệu tồn tại, xóa tài liệu đầu tiên
-            const allWishList = [];
-            querySnapshot.forEach((doc) => {
-               allWishList.push({ id: doc.id, ...doc.data() });
-            });
-            res.status(200).json(allWishList);
-         } else {
-            // Nếu không tìm thấy tài liệu, thêm một tài liệu mới vào collection "wishList"
-            res.status(200).json([]);
+         for (const course of querySnapshotCat.docs) {
+            const courseRef = admin.firestore().collection("courses");
+            const querySnapshotCourse = await courseRef.doc(course.data().idCourse).get();
+
+            allCourses.push({ id: querySnapshotCourse.id, ...querySnapshotCourse.data() });
          }
+         return res.status(200).json(allCourses);
       } catch (error) {
-         console.error("Error get wishlist:", error);
-         res.status(500).json({ message: "Lấy thất bại", error });
+         console.error("Error getting all course:", error);
+         throw new Error("Failed to get all course from Firestore");
+      }
+   }
+   async addUserCourse(req, res) {
+      const { idUser, idCourse } = req.body;
+      try {
+         const usersRef = admin.firestore().collection("userCourses");
+         const userData = {
+            idUser: idUser,
+            idCourse: idCourse,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+         };
+         await usersRef.doc().set(userData);
+
+         res.status(200).json({ status: 200, mess: "Thêm thành công" });
+      } catch (error) {
+         console.error("Error add course:", error);
+         res.status(500).json({ message: "Đăng ký khóa học thất bại", error });
+      }
+   }
+   async getUserCourse(req, res) {
+      const { idUser } = req.params;
+      try {
+         const allCourses = [];
+         const ref = admin.firestore().collection("userCourses");
+         const querySnapshotCat = await ref.where("idUser", "==", idUser).get();
+
+         for (const course of querySnapshotCat.docs) {
+            const courseRef = admin.firestore().collection("courses");
+            const querySnapshotCourse = await courseRef.doc(course.data().idCourse).get();
+
+            allCourses.push({ id: querySnapshotCourse.id, ...querySnapshotCourse.data() });
+         }
+         return res.status(200).json(allCourses);
+      } catch (error) {
+         console.error("Error getting all course:", error);
+         throw new Error("Failed to get all course from Firestore");
       }
    }
 }

@@ -231,6 +231,12 @@ class NewsSite {
          const course = {
             ...req.body,
             thumb: thumb.path,
+            rating: 0,
+            ratingCount: 0,
+            ratingCount: 0,
+            totalLecture: 0,
+            totalStudent: 0,
+            totalTimeVideo: 0,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
          };

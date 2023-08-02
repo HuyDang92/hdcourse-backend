@@ -4,19 +4,24 @@ const middlewareController = require("../middlewares/middleWareUserController");
 const uploadImage = require("../middlewares/middlewareUpload");
 const router = express.Router();
 
-router.get("/getWishList/:idUser", auth.getWishList);
-router.post("/addWishList", auth.addWishList);
-router.post("/addUser", auth.addUser);
+router.post("/addWishList", middlewareController.verifyToken, auth.addWishList);
+router.get("/getWishList/:idUser", middlewareController.verifyToken, auth.getWishList);
+
+router.post("/addUserCourse", middlewareController.verifyToken, auth.addUserCourse);
+router.get("/getUserCourse/:idUser", middlewareController.verifyToken, auth.getUserCourse);
+
+router.post("/addUser", middlewareController.verifyToken, auth.addUser);
 router.post("/create", middlewareController.verifyToken, auth.create);
 router.delete("/delete/:uid", middlewareController.verifyToken, auth.delete);
+router.put("/updateProfile", uploadImage("users_avatar").single("photoURLNew"), auth.updateProfile);
+
 router.get("/getAllData", middlewareController.verifyToken, auth.getAllUser);
 router.get(
    "/getDataLimit/:pageSize/:currentPage",
    middlewareController.verifyToken,
    auth.getDataLimit
 );
-router.post("/getUserById", auth.getUserById);
 router.get("/getUserByIdQuery/:id", auth.getUserByIdQuery);
-router.put("/updateProfile", uploadImage("users_avatar").single("photoURLNew"), auth.updateProfile);
+router.post("/getUserById", auth.getUserById);
 
 module.exports = router;

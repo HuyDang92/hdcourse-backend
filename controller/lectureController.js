@@ -37,6 +37,21 @@ class NewsSite {
          throw new Error("Failed to get all lecture from Firestore");
       }
    }
+   async getLectureById(req, res) {
+      const { idLecture } = req.params;
+      try {
+         const lectureRef = admin.firestore().collection("lectures");
+         const lectureDoc = await lectureRef.doc(idLecture).get();
+         if (!lectureDoc.exists) {
+            res.status(401).json({ mes: "Không tìm thấy khóa học" });
+            return null;
+         }
+         return res.status(200).json(lectureDoc.data());
+      } catch (error) {
+         console.error("Error getting lecture:", error);
+         throw new Error("Failed to get lecture from Firestore");
+      }
+   }
    async delete(req, res) {
       const { uid } = req.params;
 
