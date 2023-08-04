@@ -3,7 +3,6 @@ const admin = require("../firebase/index");
 class NewsSite {
    async getAllLecture(req, res) {
       const { idCourse } = req.params;
-      console.log(idCourse);
       try {
          const allSection = [];
          const sectionRef = admin.firestore().collection("sections");
@@ -24,12 +23,18 @@ class NewsSite {
                .where("idSection", "==", section.id)
                .orderBy("index", "asc")
                .get();
+            const learnedQuery = await lectureRef
+               .where("idSection", "==", section.id)
+               .where("learned", "==", true)
+               .get();
 
             querySnapshotLectures.forEach((lecture) => {
                sections.lectures.push({ id: lecture.id, ...lecture.data() });
             });
             const lectureCount = querySnapshotLectures.size;
+            const learnedCount = learnedQuery.size;
             sections.lectureCount = lectureCount;
+            sections.learnedCount = learnedCount;
             allSection.push(sections);
          }
          return res.status(200).json(allSection);
