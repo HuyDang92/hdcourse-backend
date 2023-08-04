@@ -151,13 +151,7 @@ class NewsSite {
          };
          await usersRef.doc(uid).set(updateData, { merge: true });
 
-         const updatedUserDoc = await usersRef.doc(uid).get();
-         const data = updatedUserDoc.data();
-
-         res.status(200).json({
-            message: "Cập nhật thông tin người dùng thành công",
-            data,
-         });
+         res.status(200).json(updateData);
       } catch (error) {
          console.error("Error updating user:", error);
          res.status(500).json({ message: "Cập nhật thông tin người dùng thất bại", error });

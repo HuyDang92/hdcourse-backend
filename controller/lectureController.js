@@ -28,7 +28,8 @@ class NewsSite {
             querySnapshotLectures.forEach((lecture) => {
                sections.lectures.push({ id: lecture.id, ...lecture.data() });
             });
-
+            const lectureCount = querySnapshotLectures.size;
+            sections.lectureCount = lectureCount;
             allSection.push(sections);
          }
          return res.status(200).json(allSection);
