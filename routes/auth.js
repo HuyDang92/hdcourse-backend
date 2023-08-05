@@ -8,7 +8,7 @@ router.post("/addWishList", middlewareController.verifyToken, auth.addWishList);
 router.get("/getWishList/:idUser", middlewareController.verifyToken, auth.getWishList);
 
 router.post("/addUserCourse", middlewareController.verifyToken, auth.addUserCourse);
-router.get("/getUserCourse/:idUser", middlewareController.verifyToken, auth.getUserCourse);
+router.get("/getUserCourse/:idUser",  auth.getUserCourse);
 
 router.post("/addUser", middlewareController.verifyToken, auth.addUser);
 router.post("/create", middlewareController.verifyToken, auth.create);

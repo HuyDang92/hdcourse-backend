@@ -230,9 +230,7 @@ class NewsSite {
       try {
          const course = {
             ...req.body,
-            thumb: thumb.path,
             rating: 0,
-            ratingCount: 0,
             ratingCount: 0,
             totalLecture: 0,
             totalStudent: 0,

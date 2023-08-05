@@ -27,7 +27,6 @@ class NewsSite {
                .where("idSection", "==", section.id)
                .where("learned", "==", true)
                .get();
-
             querySnapshotLectures.forEach((lecture) => {
                sections.lectures.push({ id: lecture.id, ...lecture.data() });
             });
@@ -35,6 +34,8 @@ class NewsSite {
             const learnedCount = learnedQuery.size;
             sections.lectureCount = lectureCount;
             sections.learnedCount = learnedCount;
+            console.log(learnedCount);
+
             allSection.push(sections);
          }
          return res.status(200).json(allSection);
@@ -74,19 +75,54 @@ class NewsSite {
    }
    async addLecture(req, res) {
       try {
+         const courseRef = admin.firestore().collection("courses");
+         const lectureRef = admin.firestore().collection("lectures");
+
+         // Tạo đối tượng lecture với createdAt và updatedAt
          const lecture = {
             ...req.body,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
          };
-         console.log(lecture);
-         const lectureRef = admin.firestore().collection("lectures");
+
+         // Thêm bài giảng mới vào Firestore
          await lectureRef.doc().set(lecture);
 
+         // Truy vấn số lượng bài giảng có trong khóa học
+         const querySnapshotLectures = await lectureRef
+            .where("idCourse", "==", req.body.idCourse)
+            .get();
+         const totalLecture = querySnapshotLectures.size; // Đây là giá trị đã đúng của totalLecture
+         // Tạo đối tượng course với totalLecture đã được gán đúng giá trị
+         const course = {
+            totalLecture: totalLecture,
+         };
+         console.log(course);
+         // Cập nhật thông tin số lượng bài giảng của khóa học
+         await courseRef.doc(req.body.idCourse).set(course, { merge: true });
+
+         // Phản hồi thành công
          res.status(200).json({ mess: "Thêm thành công" });
       } catch (error) {
          console.error("Error creating new lecture:", error);
          res.status(500).json({ message: "Thêm thất bại", error });
+      }
+   }
+
+   async learnedLecture(req, res) {
+      try {
+         const { learned, idLecture } = req.body;
+         console.log(learned);
+         const lecture = {
+            learned: true,
+         };
+         const lectureRef = admin.firestore().collection("lectures");
+         await lectureRef.doc(idLecture).set(lecture, { merge: true });
+
+         res.status(200).json({ status: 200, message: "Thành công" });
+      } catch (error) {
+         console.error("Error update new lecture:", error);
+         res.status(500).json({ message: "Thất bại", error });
       }
    }
 }
