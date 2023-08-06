@@ -4,11 +4,15 @@ const middlewareController = require("../middlewares/middleWareUserController");
 const uploadImage = require("../middlewares/middlewareUpload");
 const router = express.Router();
 
+router.post("/addCart", middlewareController.verifyToken, auth.addCart);
+router.get("/getCart/:idUser", middlewareController.verifyToken, auth.getCart);
+
 router.post("/addWishList", middlewareController.verifyToken, auth.addWishList);
 router.get("/getWishList/:idUser", middlewareController.verifyToken, auth.getWishList);
 
 router.post("/addUserCourse", middlewareController.verifyToken, auth.addUserCourse);
-router.get("/getUserCourse/:idUser",  auth.getUserCourse);
+router.get("/getUserCourse/:idUser", auth.getUserCourse);
+router.get("/getOneUserCourse/:idUser/:idCourse", auth.getOneUserCourse);
 
 router.post("/addUser", middlewareController.verifyToken, auth.addUser);
 router.post("/create", middlewareController.verifyToken, auth.create);

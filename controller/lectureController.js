@@ -23,18 +23,12 @@ class NewsSite {
                .where("idSection", "==", section.id)
                .orderBy("index", "asc")
                .get();
-            const learnedQuery = await lectureRef
-               .where("idSection", "==", section.id)
-               .where("learned", "==", true)
-               .get();
+
             querySnapshotLectures.forEach((lecture) => {
                sections.lectures.push({ id: lecture.id, ...lecture.data() });
             });
             const lectureCount = querySnapshotLectures.size;
-            const learnedCount = learnedQuery.size;
             sections.lectureCount = lectureCount;
-            sections.learnedCount = learnedCount;
-            console.log(learnedCount);
 
             allSection.push(sections);
          }
@@ -111,13 +105,26 @@ class NewsSite {
 
    async learnedLecture(req, res) {
       try {
-         const { learned, idLecture } = req.body;
-         console.log(learned);
-         const lecture = {
-            learned: true,
-         };
-         const lectureRef = admin.firestore().collection("lectures");
-         await lectureRef.doc(idLecture).set(lecture, { merge: true });
+         const { idUser, idCourse, idLecture } = req.body;
+         const lectureRef = admin.firestore().collection("userCourses");
+         const querySnapshot = await lectureRef
+            .where("idUser", "==", idUser)
+            .where("idCourse", "==", idCourse)
+            .get();
+
+         if (querySnapshot.empty) {
+            res.status(404).json({ message: "Document not found" });
+            return;
+         }
+
+         const data = querySnapshot.docs[0].data().lectureLearned;
+         if (!data.includes(idLecture)) {
+            // Check if idLecture is already in the array to avoid duplicates.
+            data.push(idLecture);
+
+            // Update the document with the modified lectureLearned array.
+            await querySnapshot.docs[0].ref.update({ lectureLearned: data });
+         }
 
          res.status(200).json({ status: 200, message: "Thành công" });
       } catch (error) {

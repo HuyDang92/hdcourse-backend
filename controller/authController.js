@@ -267,6 +267,7 @@ class NewsSite {
          const userData = {
             idUser: idUser,
             idCourse: idCourse,
+            lectureLearned: [],
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
          };
          await usersRef.doc().set(userData);
@@ -282,6 +283,78 @@ class NewsSite {
       try {
          const allCourses = [];
          const ref = admin.firestore().collection("userCourses");
+         const querySnapshotCat = await ref.where("idUser", "==", idUser).get();
+
+         for (const course of querySnapshotCat.docs) {
+            const courseRef = admin.firestore().collection("courses");
+            const querySnapshotCourse = await courseRef.doc(course.data().idCourse).get();
+
+            allCourses.push({ id: querySnapshotCourse.id, ...querySnapshotCourse.data() });
+         }
+         return res.status(200).json(allCourses);
+      } catch (error) {
+         console.error("Error getting all course:", error);
+         throw new Error("Failed to get all course from Firestore");
+      }
+   }
+   async getOneUserCourse(req, res) {
+      const { idUser, idCourse } = req.params;
+      try {
+         const ref = admin.firestore().collection("userCourses");
+         const querySnapshot = await ref
+            .where("idUser", "==", idUser)
+            .where("idCourse", "==", idCourse)
+            .get();
+
+         // Check if any documents match the query
+         if (querySnapshot.empty) {
+            return res.status(404).json({ message: "Không tìm thấy" });
+         }
+
+         // Assuming there is only one matching document, retrieve its data
+         const data = querySnapshot.docs[0].data();
+         return res.status(200).json(data);
+      } catch (error) {
+         console.error("Error getting user course:", error);
+         throw new Error("Failed to get user course from Firestore");
+      }
+   }
+   async addCart(req, res) {
+      const { idUser, idCourse } = req.body;
+      try {
+         const listRef = admin.firestore().collection("carts");
+         const listQuery = await listRef
+            .where("idUser", "==", idUser)
+            .where("idCourse", "==", idCourse)
+            .get();
+
+         if (!listQuery.empty) {
+            // Nếu có tài liệu tồn tại, xóa tài liệu đầu tiên
+            const listDoc = listQuery.docs[0];
+            await listDoc.ref.delete();
+            res.status(200).json({ message: "Xóa thành công" });
+         } else {
+            // Nếu không tìm thấy tài liệu, thêm một tài liệu mới vào collection "wishList"
+            const data = {
+               idUser: idUser,
+               idCourse: idCourse,
+               createdAt: admin.firestore.FieldValue.serverTimestamp(),
+               updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            };
+            await listRef.add(data);
+
+            res.status(200).json({ message: "Thêm thành công" });
+         }
+      } catch (error) {
+         console.error("Error add wishlist:", error);
+         res.status(500).json({ message: "Thêm thất bại", error });
+      }
+   }
+   async getCart(req, res) {
+      const { idUser } = req.params;
+      try {
+         const allCourses = [];
+         const ref = admin.firestore().collection("carts");
          const querySnapshotCat = await ref.where("idUser", "==", idUser).get();
 
          for (const course of querySnapshotCat.docs) {
