@@ -132,5 +132,72 @@ class NewsSite {
          res.status(500).json({ message: "Thất bại", error });
       }
    }
+   async addCommentLecture(req, res) {
+      try {
+         const course = {
+            ...req.body,
+            reply: [],
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+         };
+         const courseRef = admin.firestore().collection("comments");
+         await courseRef.doc().set(course);
+
+         res.status(200).json({ mess: "Thêm thành công" });
+      } catch (error) {
+         console.error("Error creating new course:", error);
+         res.status(500).json({ message: "Thêm thất bại", error });
+      }
+   }
+   async addReplyCommentLecture(req, res) {
+      try {
+         const course = {
+            avatar: req.body.avatar,
+            comment: req.body.comment,
+            idUser: req.body.idUser,
+            name: req.body.name,
+            // createdAt: admin.firestore.FieldValue.serverTimestamp(),
+         };
+         console.log(req.body);
+         const lectureRef = admin.firestore().collection("comments");
+         const querySnapshot = await lectureRef
+            .where("idUser", "==", req.body.idUserOld)
+            .where("idLecture", "==", req.body.idLecture)
+            .get();
+
+         if (querySnapshot.empty) {
+            res.status(404).json({ message: "Document not found" });
+            return;
+         }
+
+         const data = querySnapshot.docs[0].data().reply;
+         data.push(course);
+         await querySnapshot.docs[0].ref.update({ reply: data });
+
+         res.status(200).json({ mess: "Thêm thành công" });
+      } catch (error) {
+         console.error("Error creating new course:", error);
+         res.status(500).json({ message: "Thêm thất bại", error });
+      }
+   }
+   async getCommentLecture(req, res) {
+      const { idLecture, limit } = req.params;
+      try {
+         const allComments = [];
+         const ref = admin.firestore().collection("comments");
+         const querySnapshot = await ref
+            .where("idLecture", "==", idLecture)
+            .orderBy("createdAt", "desc")
+            .limit(parseInt(limit))
+            .get();
+         querySnapshot.forEach((comment) => {
+            allComments.push({ id: comment.id, ...comment.data() });
+         });
+
+         return res.status(200).json(allComments);
+      } catch (error) {
+         console.error("Error getting all comment:", error);
+         throw new Error("Failed to get all comment from Firestore");
+      }
+   }
 }
 module.exports = new NewsSite();

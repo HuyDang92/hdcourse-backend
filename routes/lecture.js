@@ -4,6 +4,10 @@ const uploadImage = require("../middlewares/middlewareUpload");
 
 const router = express.Router();
 
+router.post("/addCommentLecture", lecture.addCommentLecture);
+router.post("/addReplyCommentLecture", lecture.addReplyCommentLecture);
+router.get("/getCommentLecture/:idLecture/:limit", lecture.getCommentLecture);
+
 router.put("/learnedLecture", lecture.learnedLecture);
 router.post("/addLecture", lecture.addLecture);
 router.delete("/delete/:uid", lecture.delete);
