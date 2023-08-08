@@ -268,6 +268,7 @@ class NewsSite {
             idUser: idUser,
             idCourse: idCourse,
             lectureLearned: [],
+            ratingCheck: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
          };
          await usersRef.doc().set(userData);

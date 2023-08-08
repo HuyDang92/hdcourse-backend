@@ -53,20 +53,19 @@ class NewsSite {
          throw new Error("Failed to get lecture from Firestore");
       }
    }
-   async delete(req, res) {
-      const { uid } = req.params;
+   async deleteComment(req, res) {
+      const { idComment } = req.params;
 
       try {
-         const usersRef = admin.firestore().collection("courses");
-         const userQuery = await usersRef.where("uid", "==", uid).get();
-         const userDoc = userQuery.docs[0];
-         await userDoc.ref.delete();
-         res.status(200).json({ message: "Xóa người dùng thành công" });
+         const commentRef = admin.firestore().collection("comments").doc(idComment); // Get a reference to the specific comment document
+         await commentRef.delete(); // Delete the comment document
+         res.status(200).json({ message: "Xóa bình luận thành công" });
       } catch (error) {
-         console.error("Error deleting user:", error);
-         res.status(500).json({ message: "Xóa người dùng thất bại", error });
+         console.error("Error deleting comment:", error);
+         res.status(500).json({ message: "Xóa bình luận thất bại", error: error.message });
       }
    }
+
    async addLecture(req, res) {
       try {
          const courseRef = admin.firestore().collection("courses");

@@ -10,7 +10,7 @@ router.get("/getCommentLecture/:idLecture/:limit", lecture.getCommentLecture);
 
 router.put("/learnedLecture", lecture.learnedLecture);
 router.post("/addLecture", lecture.addLecture);
-router.delete("/delete/:uid", lecture.delete);
+router.delete("/deleteComment/:idComment", lecture.deleteComment);
 router.get("/getAllLecture/:idCourse", lecture.getAllLecture);
 router.get("/getLectureById/:idLecture", lecture.getLectureById);
 // router.put("/updateCourse", lecture.updateCourse);
